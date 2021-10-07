@@ -1,7 +1,7 @@
 import { Form, Button, Select, InputNumber, Input, Modal } from 'antd';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
@@ -22,6 +22,12 @@ const hasDuplicates = (array: string[]) => {
 type FormProductData = {
   productId: string;
   name: string;
+  price: number;
+};
+
+type FormDataProducts = {
+  productId: string;
+  quantity: number;
 };
 
 type DessertsFormProps = {
@@ -37,6 +43,7 @@ const DessertsForm = ({
 }: DessertsFormProps) => {
   const [form] = Form.useForm();
   const router = useRouter();
+  const [productPrices, setProductPrices] = useState<any[]>([]);
 
   const submitWithDuplicateProductsCheck = (data: DessertFormValues) => {
     const productIds = data.products.map((p) => p.productId);
@@ -99,11 +106,39 @@ const DessertsForm = ({
     }
   };
 
+  const calculateProductPrice = () => {
+    const formProductsValue = form.getFieldValue('products') as (
+      | FormDataProducts
+      | undefined
+    )[];
+
+    const productsWithPrices = formProductsValue.map((p) =>
+      p
+        ? {
+            ...p,
+            price: +(
+              (allProducts.find((pr) => pr.productId === p.productId)?.price ||
+                0) * p.quantity || 0
+            ).toFixed(2),
+          }
+        : null,
+    );
+
+    setProductPrices(productsWithPrices);
+  };
+
+  useEffect(() => {
+    if (productPrices.length === 0) {
+      calculateProductPrice();
+    }
+  }, []);
+
   return (
     <Form
       form={form}
       onFinish={submitWithDuplicateProductsCheck}
       autoComplete="off"
+      onFieldsChange={() => calculateProductPrice()}
     >
       <Form.Item
         name="name"
@@ -168,6 +203,13 @@ const DessertsForm = ({
                 </Form.Item>
 
                 <RemoveProductItem>
+                  <ProductPricePreview>
+                    {productPrices[field.name]
+                      ? productPrices[field.name].price
+                      : 0}
+                    &nbsp;грн
+                  </ProductPricePreview>
+
                   <Button
                     type="ghost"
                     danger
@@ -239,7 +281,13 @@ const ProductFieldsContainer = styled.div`
 const RemoveProductItem = styled.div`
   margin-top: 10px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const ProductPricePreview = styled.span`
+  padding-left: 10px;
+  font-size: 16px;
 `;
 
 export default DessertsForm;
