@@ -8,7 +8,7 @@ import NavMenu from '../../../shared-components/NavMenu';
 import DessertsForm from '../components/DessertsForm';
 
 type DessertDetailsPageProps = {
-  products: { productId: string; name: string }[];
+  products: { productId: string; name: string; price: number }[];
   dessert: DessertModel;
 };
 
@@ -47,6 +47,7 @@ DessertDetailsPage.getInitialProps = async (ctx: any) => {
   const products = result.data.map((product: ProductModel) => ({
     productId: product._id,
     name: product.name,
+    price: product.price,
   }));
 
   const dessertData = await ifetch(

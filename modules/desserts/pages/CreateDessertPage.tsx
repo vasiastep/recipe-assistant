@@ -6,7 +6,7 @@ import NavMenu from '../../../shared-components/NavMenu';
 import DessertsForm from '../components/DessertsForm';
 
 type CreateDessertPageProps = {
-  products: { productId: string; name: string }[];
+  products: { productId: string; name: string; price: number }[];
 };
 
 const dessertDefaultValues = {
@@ -16,21 +16,19 @@ const dessertDefaultValues = {
   profitPercent: 0,
 };
 
-const CreateDessertPage = ({ products }: CreateDessertPageProps) => {
-  return (
-    <>
-      <NavMenu />
-      <DessertsPageWrapper>
-        <Title>Новий десерт</Title>
-        <DessertsForm
-          allProducts={products}
-          defaultValues={dessertDefaultValues}
-          type="create"
-        />
-      </DessertsPageWrapper>
-    </>
-  );
-};
+const CreateDessertPage = ({ products }: CreateDessertPageProps) => (
+  <>
+    <NavMenu />
+    <DessertsPageWrapper>
+      <Title>Новий десерт</Title>
+      <DessertsForm
+        allProducts={products}
+        defaultValues={dessertDefaultValues}
+        type="create"
+      />
+    </DessertsPageWrapper>
+  </>
+);
 
 CreateDessertPage.getInitialProps = async () => {
   const result = await fetch(
@@ -40,6 +38,7 @@ CreateDessertPage.getInitialProps = async () => {
   const products = result.data.map((product: ProductModel) => ({
     productId: product._id,
     name: product.name,
+    price: product.price,
   }));
 
   return { products };
