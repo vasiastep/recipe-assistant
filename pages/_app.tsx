@@ -61,7 +61,7 @@ class App extends BaseApp<AppProps> {
 
     return (
       <>
-        <NextSeo title="Oksana - Desserts" description="Desserts management" />
+        <NextSeo title="Desserts assistent" description="Desserts management" />
         <Head>
           <meta
             name="viewport"
